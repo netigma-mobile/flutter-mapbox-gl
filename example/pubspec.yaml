@@ -15,15 +15,21 @@ dependencies:
   location: ^2.5.3
   http:
 
-dependency_overrides:
-  mapbox_gl_platform_interface:
-    path: ../mapbox_gl_platform_interface
-  mapbox_gl_web:
-    path: ../mapbox_gl_web
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  mapbox_gl_platform_interface:
+    git:
+      url: https://github.com/netigma-mobile/flutter-mapbox-gl.git
+      path: mapbox_gl_platform_interface
+
+  mapbox_gl_web:
+    git:
+      url: https://github.com/netigma-mobile/flutter-mapbox-gl.git
+      path: mapbox_gl_web
 
   mapbox_gl:
     path: ../
