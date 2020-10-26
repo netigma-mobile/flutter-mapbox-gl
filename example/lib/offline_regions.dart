@@ -11,8 +11,8 @@ final LatLngBounds hawaii = LatLngBounds(
 );
 
 final LatLngBounds santiago = LatLngBounds(
-  southwest: const LatLng(-33.5597, -70.49102),
-  northeast: const LatLng(-33.33282, -153.74267),
+  northeast: const LatLng(36.565298, 32.043922),
+  southwest: const LatLng(36.543877, 32.018438),
 );
 
 final LatLngBounds auckland = LatLngBounds(
@@ -30,12 +30,12 @@ final OfflineRegion hawaiiRegion = OfflineRegion(
 );
 
 final OfflineRegion santiagoRegion = OfflineRegion(
-  id: 1,
+  id: 3,
   bounds: santiago,
   metadata: null,
   minZoom: 10,
-  maxZoom: 16,
-  mapStyleUrl: MapboxStyles.MAPBOX_STREETS,
+  maxZoom: 18,
+  mapStyleUrl:"http://ssltest.netcad.com.tr/wn/gisapi/mapbox/GetStyle?tileProvider=bingsatellite&SessionID=0bf0457f29b3450993ea5651e50127b3&netgisTileUrl=http%3A%2F%2Fssltest.netcad.com.tr%2Fnetgisnew%2Fmap%2FALANYA5%2F%7Bx%7D%2F%7By%7D%2F%7Bz%7D&queryName=&filter=",
 );
 
 final OfflineRegion aucklandRegion = OfflineRegion(
