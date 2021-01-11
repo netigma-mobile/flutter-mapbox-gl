@@ -8,7 +8,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
@@ -150,7 +149,7 @@ final class MapboxMapController
     MapboxMapOptions options,
     String accessToken,
     String styleStringInitial) {
-    Mapbox.getInstance(context, accessToken!=null ? accessToken : getAccessToken(context));
+    MapBoxUtils.getMapbox(context, accessToken);
     this.id = id;
     this.context = context;
     this.activityState = activityState;
@@ -166,23 +165,6 @@ final class MapboxMapController
       new MethodChannel(registrar.messenger(), "plugins.flutter.io/mapbox_maps_" + id);
     methodChannel.setMethodCallHandler(this);
     this.registrarActivityHashCode = registrar.activity().hashCode();
-  }
-
-  private static String getAccessToken(@NonNull Context context) {
-    try {
-      ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-      Bundle bundle = ai.metaData;
-      String token = bundle.getString("com.mapbox.token");
-      if (token == null || token.isEmpty()) {
-        throw new NullPointerException();
-      }
-      return token;
-    } catch (Exception e) {
-      Log.e(TAG, "Failed to find an Access Token in the Application meta-data. Maps may not load correctly. " +
-        "Please refer to the installation guide at https://github.com/tobrun/flutter-mapbox-gl#mapbox-access-token " +
-        "for troubleshooting advice." + e.getMessage());
-    }
-    return null;
   }
 
   @Override
@@ -849,7 +831,7 @@ final class MapboxMapController
           result.error("STYLE IS NULL", "The style is null. Has onStyleLoaded() already been invoked?", null);
         }
         List<LatLng> coordinates = Convert.toLatLngList(call.argument("coordinates"));
-        style.addSource(new ImageSource(call.argument("name"), new LatLngQuad(coordinates.get(0), coordinates.get(1), coordinates.get(2), coordinates.get(3)), BitmapFactory.decodeByteArray(call.argument("bytes"), 0, call.argument("length"))));
+        style.addSource(new ImageSource(call.argument("imageSourceId"), new LatLngQuad(coordinates.get(0), coordinates.get(1), coordinates.get(2), coordinates.get(3)), BitmapFactory.decodeByteArray(call.argument("bytes"), 0, call.argument("length"))));
         result.success(null);
         break;
       }
@@ -857,7 +839,7 @@ final class MapboxMapController
         if (style == null) {
           result.error("STYLE IS NULL", "The style is null. Has onStyleLoaded() already been invoked?", null);
         }
-        style.removeSource((String) call.argument("name"));
+        style.removeSource((String) call.argument("imageSourceId"));
         result.success(null);
         break;
       }
@@ -865,7 +847,15 @@ final class MapboxMapController
         if (style == null) {
           result.error("STYLE IS NULL", "The style is null. Has onStyleLoaded() already been invoked?", null);
         }
-        style.addLayer(new RasterLayer(call.argument("name"), call.argument("sourceId")));
+        style.addLayer(new RasterLayer(call.argument("imageLayerId"), call.argument("imageSourceId")));
+        result.success(null);
+        break;
+      }
+      case "style#addLayerBelow": {
+        if (style == null) {
+          result.error("STYLE IS NULL", "The style is null. Has onStyleLoaded() already been invoked?", null);
+        }
+        style.addLayerBelow(new RasterLayer(call.argument("imageLayerId"), call.argument("imageSourceId")), call.argument("belowLayerId"));
         result.success(null);
         break;
       }
@@ -873,7 +863,7 @@ final class MapboxMapController
         if (style == null) {
           result.error("STYLE IS NULL", "The style is null. Has onStyleLoaded() already been invoked?", null);
         }
-        style.removeLayer((String) call.argument("name"));
+        style.removeLayer((String) call.argument("imageLayerId"));
         result.success(null);
         break;
       }
