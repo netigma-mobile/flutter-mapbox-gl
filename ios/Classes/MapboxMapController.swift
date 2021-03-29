@@ -188,11 +188,12 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
              guard let arguments = methodCall.arguments as? [String: Any] else { return }
              guard let x = arguments["x"] as? Double else { return }
              guard let y = arguments["y"] as? Double else { return }
+            let tapPoint: CGPoint = sender.location(in: mapView)
              let screenPoint: CGPoint = CGPoint(x: y, y:y)
-             let coordinates: CLLocationCoordinate2D = mapView.convert(screenPoint, toCoordinateFrom: mapView)
+             let coordinates: CLLocationCoordinate2D = mapView.convert(tapPoint, toCoordinateFrom: mapView)
              var reply = [String: NSObject]()
-             reply["latitude"] = 36.534416
-             reply["longitude"] = 32.004276
+             reply["latitude"] = coordinates.latitude as NSObject
+             reply["longitude"] = coordinates.longitude as NSObject
              result(reply)
         
         case "camera#move":
