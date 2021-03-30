@@ -185,16 +185,15 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
               reply["metersperpixel"] = returnVal as NSObject
               result(reply)
          case "map#toLatLng":
-             guard let arguments = methodCall.arguments as? [String: Any] else { return }
-             guard let x = arguments["x"] as? Double else { return }
-             guard let y = arguments["y"] as? Double else { return }
-            let tapPoint: CGPoint = sender.location(in: mapView)
-             let screenPoint: CGPoint = CGPoint(x: y, y:y)
-             let coordinates: CLLocationCoordinate2D = mapView.convert(tapPoint, toCoordinateFrom: mapView)
-             var reply = [String: NSObject]()
-             reply["latitude"] = coordinates.latitude as NSObject
-             reply["longitude"] = coordinates.longitude as NSObject
-             result(reply)
+            guard let arguments = methodCall.arguments as? [String: Any] else { return }
+                       guard let x = arguments["x"] as? Double else { return }
+                       guard let y = arguments["y"] as? Double else { return }
+                       let screenPoint: CGPoint = CGPoint(x: y, y:y)
+                       let coordinates: CLLocationCoordinate2D = mapView.convert(screenPoint, toCoordinateFrom: mapView)
+                       var reply = [String: NSObject]()
+                       reply["latitude"] = coordinates.latitude as NSObject
+                       reply["longitude"] = coordinates.longitude as NSObject
+                       result(reply)
         
         case "camera#move":
             guard let arguments = methodCall.arguments as? [String: Any] else { return }
@@ -409,7 +408,7 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
             //guard let length = arguments["length"] as? NSNumber else { return }
             guard let bytes = arguments["bytes"] as? FlutterStandardTypedData else { return }
             guard let sdf = arguments["sdf"] as? Bool else { return }
-            guard let data = bytes.data as? Data else{ return }
+            guard let data = bytes.data else{ return }
             guard let image = UIImage(data: data) else { return }
             if (sdf) {
                 self.mapView.style?.setImage(image.withRenderingMode(.alwaysTemplate), forName: name)
